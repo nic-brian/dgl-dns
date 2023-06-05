@@ -25,7 +25,7 @@ def dgl_dns(request):
 
   # create RR for new virtual host
   record_set = last_zone.resource_record_set( fqdn, 'A', 300, [target_ip] )
-  changes = zone.changes()
+  changes = last_zone.changes()
   changes.add_record_set(record_set)
   changes.create()
 
