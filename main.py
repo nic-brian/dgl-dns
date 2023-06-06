@@ -23,6 +23,12 @@ def dgl_dns(request):
   # construct FQDN for new virtual host
   fqdn = vhost + '.' + last_zone.dns_name
 
+  rrs = last_zone.list_resource_record_sets()
+  for rr in rrs:
+    if fqdn == rr.name:
+      print( 'Found match' )
+      return fqdn
+
   # create RR for new virtual host
   record_set = last_zone.resource_record_set( fqdn, 'A', 300, [target_ip] )
   changes = last_zone.changes()
