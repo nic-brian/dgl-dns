@@ -1,15 +1,19 @@
+import os
 import functions_framework
-from google.cloud import dns
+import cloudflaredns
+import googledns
 
-# set up the Google Cloud DNS API Client
-client = dns.Client()
+default_provider = os.environ.get( 'DEFAULT_PROVIDER', 'cloudflare' )
+default_domain = os.environ.get( 'DEFAULT_DOMAIN', 'example.com')
 
-# get the last zone
-# (should probably modify this to select a particular zone)
-zones = client.list_zones()
-last_zone = None
-for zone in zones:
-  last_zone = zone
+providers = {
+  'cloudflare' : {
+    'add': cloudflaredns.add
+  },
+  'google' : {
+    'add': googledns.add
+  }
+}
 
 # Register an HTTP function with the Functions Framework
 @functions_framework.http
@@ -20,21 +24,22 @@ def dgl_dns(request):
   # construct new virtual hostname
   vhost = 'vm' + target_ip.replace( '.', '-')
 
+  # establish DNS service provider and domain
+  provider = default_provider
+  domain = default_domain
+  path_parts = request.path.split( '/' )
+  if len(path_parts) > 1:
+    if path_parts[1] in providers:
+      provider = path_parts[1]
+    if len(path_parts) > 2:
+      domain = path_parts[2]
+
   # construct FQDN for virtual host
-  fqdn = vhost + '.' + last_zone.dns_name
+  # fqdn = vhost + '.' + last_zone.dns_name
+  fqdn = vhost + '.' + domain
 
-  # check to see if the RR already exists
-  # if it does, then return immediately
-  rrs = last_zone.list_resource_record_sets()
-  for rr in rrs:
-    if fqdn == rr.name:
-      return fqdn
-
-  # otherwise, create new RR for virtual host
-  record_set = last_zone.resource_record_set( fqdn, 'A', 300, [target_ip] )
-  changes = last_zone.changes()
-  changes.add_record_set(record_set)
-  changes.create()
+  # create new RR for virtual host if needed
+  providers[provider]['add']( vhost, domain, target_ip)
 
   # return FQDN of new virtual host
   return fqdn

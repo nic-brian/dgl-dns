@@ -1,2 +1,3 @@
 functions-framework==3.*
 google-cloud-dns==0.34.1
+cloudflare==2.11.6
