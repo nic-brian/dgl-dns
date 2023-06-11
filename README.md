@@ -1,6 +1,5 @@
 # dgl-dns
 
-<<<<<<< HEAD
 This is a Google Cloud Function that creates a generic DNS 'A' record
 based on the IP address of the requesting client.
 
@@ -74,16 +73,3 @@ curl https://cloud_function_url/google/someotherdomain.org
 
 The last 2 forms will obviously only work for domains for 
 which the Google Cloud Function actuall has responsibility for.
-
-
-
-=======
-This is a Google Cloud Function which creates a generic DNS 'A' resource record
-based on the IP address of the client.
-
-The function is typically deployed as follows:
-
-```bash
-gcloud functions deploy dgl-dns --gen2 --region=us-west1 --runtime=python311 --entry-point=dgl_dns --trigger-http --allow-unauthenticated
-```
->>>>>>> b07edf93dc66ed88fc4a5cd1b798d1ad593d97d9
