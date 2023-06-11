@@ -72,4 +72,4 @@ curl https://cloud_function_url/google/someotherdomain.org
 ```
 
 The last 2 forms will obviously only work for domains for 
-which the Google Cloud Function actuall has responsibility for.
+which the Google Cloud Function actually has responsibility for.
